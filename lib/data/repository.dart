@@ -6,7 +6,6 @@ import 'package:test_app/data/database.dart';
 import 'package:test_app/model/Book.dart';
 import 'package:http/http.dart' as http;
 
-
 /// A class similar to http.Response but instead of a String describing the body
 /// it already contains the parsed Dart-Object
 class ParsedResponse<T> {
@@ -58,7 +57,7 @@ class Repository {
        return new ParsedResponse(response.statusCode, []);
      }
      // Decode and go to the items part where the necessary book information is
-     List<dynamic> list = JSON.decode(response.body)['items'];
+     List<dynamic> list = json.decode(response.body)['items'];
 
      Map<String, Book> networkBooks = {};
 
@@ -88,7 +87,7 @@ class Repository {
       return new ParsedResponse(response.statusCode, null);
     }
 
-    dynamic jsonBook = JSON.decode(response.body);
+    dynamic jsonBook = json.decode(response.body);
 
     Book book = parseNetworkBook(jsonBook);
 
@@ -151,7 +150,7 @@ class Repository {
         return new ParsedResponse(response.statusCode, null);
       }*/
 
-      dynamic jsonBook = JSON.decode(response.body);
+      dynamic jsonBook = json.decode(response.body);
 
       Book book = parseNetworkBook(jsonBook);
       updateBook(book);
