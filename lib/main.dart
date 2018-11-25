@@ -9,11 +9,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Book search',
+      title: 'Book Shelf',
       theme: new ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: new MyHomePage(title: 'Book Search'),
+      home: new MyHomePage(title: 'Book Shelf'),
     );
   }
 }
@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _clearList();
     http.get("https://www.googleapis.com/books/v1/volumes?q=$text")
         .then((response) => response.body)
-        .then(JSON.decode)
+        .then(json.decode)
         .then((map) => map["items"])
         .then((list) {list.forEach(_addBook);})
         .catchError(_onError)
