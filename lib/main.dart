@@ -13,21 +13,24 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: new MyHomePage(title: 'Book Shelf'),
+      home: new SearchScreen(title: 'Book Shelf'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+/**
+ * Виджет экрана поисковой выдачи.
+ */
+class SearchScreen extends StatefulWidget {
+  SearchScreen({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _SearchScreenState createState() => new _SearchScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SearchScreenState extends State<SearchScreen> {
   List<Book> _items = new List();
 
   final subject = new PublishSubject<String>();
@@ -35,20 +38,31 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoading = false;
 
   void _textChanged(String text) {
-    if(text.isEmpty) {
-      setState((){_isLoading = false;});
+    if (text.isEmpty) {
+      setState(() {
+        _isLoading = false;
+      });
       _clearList();
       return;
     }
-    setState((){_isLoading = true;});
+    setState(() {
+      _isLoading = true;
+    });
     _clearList();
-    http.get("https://www.googleapis.com/books/v1/volumes?q=$text")
+    http
+        .get("https://www.googleapis.com/books/v1/volumes?q=$text")
         .then((response) => response.body)
         .then(json.decode)
         .then((map) => map["items"])
-        .then((list) {list.forEach(_addBook);})
+        .then((list) {
+          list.forEach(_addBook);
+        })
         .catchError(_onError)
-        .then((e){setState((){_isLoading = false;});});
+        .then((e) {
+          setState(() {
+            _isLoading = false;
+          });
+        });
   }
 
   void _onError(dynamic d) {
@@ -62,16 +76,25 @@ class _MyHomePageState extends State<MyHomePage> {
       _items.clear();
     });
   }
+
   void _addBook(dynamic book) {
     setState(() {
-      _items.add(new Book(book["volumeInfo"]["title"], book["volumeInfo"]["imageLinks"]["smallThumbnail"]));
+      _items.add(new Book(book["volumeInfo"]["title"],
+          book["volumeInfo"]["imageLinks"]["smallThumbnail"]));
     });
   }
 
   @override
   void initState() {
     super.initState();
-    subject.stream.debounce(new Duration(milliseconds: 600)).listen(_textChanged);
+    subject.stream
+        .debounce(new Duration(milliseconds: 600))
+        .listen(_textChanged);
+  }
+
+  @override
+  void dispose() {
+    subject.close();
   }
 
   @override
@@ -91,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onChanged: (string) => (subject.add(string)),
             ),
-            _isLoading? new CircularProgressIndicator(): new Container(),
+            _isLoading ? new CircularProgressIndicator() : new Container(),
             new Expanded(
               child: new ListView.builder(
                 padding: new EdgeInsets.all(8.0),
@@ -102,14 +125,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: new EdgeInsets.all(8.0),
                           child: new Row(
                             children: <Widget>[
-                              _items[index].url != null? new Image.network(_items[index].url): new Container(),
+                              _items[index].url != null
+                                  ? new Image.network(_items[index].url)
+                                  : new Container(),
                               new Flexible(
-                                child: new Text(_items[index].title, maxLines: 10),
+                                child:
+                                    new Text(_items[index].title, maxLines: 10),
                               ),
                             ],
-                          )
-                      )
-                  );
+                          )));
                 },
               ),
             ),
@@ -122,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class Book {
   String title, url;
+
   Book(String title, String url) {
     this.title = title;
     this.url = url;
