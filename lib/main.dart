@@ -10,13 +10,14 @@ import 'package:test_app/utils/utils.dart';
 
 void main() => runApp(new MyApp());
 
+//Flutter-приложение.
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Book search',
       theme: new ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.amber,
       ),
       routes: {
         '/': (BuildContext context) => new MyHomePage(title: 'Book Search'),
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _clearList();
     http.get("https://www.googleapis.com/books/v1/volumes?q=$text")
         .then((response) => response.body)
-        .then(JSON.decode)
+        .then(json.decode)
         .then((map) => map["items"])
         .then((list) {list.forEach(_addBook);})
         .catchError(_onError)
@@ -112,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: (string) => (subject.add(string)),
             ),
             _isLoading? new CircularProgressIndicator(): new Container(),
-            new Expanded(
+            new Flexible(
               child: new ListView.builder(
                 padding: new EdgeInsets.all(8.0),
                 itemCount: _items.length,

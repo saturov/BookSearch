@@ -50,12 +50,12 @@ class BookDatabase {
 
   /// Inserts or replaces the book.
   Future updateBook(Book book) async {
-    await db.inTransaction(() async {
+    //await db.inTransaction(() async {
       await db.rawInsert(
           'INSERT OR REPLACE INTO '
               '$tableName(${Book.db_id}, ${Book.db_title}, ${Book.db_url}, ${Book.db_star}, ${Book.db_notes})'
               ' VALUES("${book.id}", "${book.title}", "${book.url}", ${book.starred? 1:0}, "${book.notes}")');
-    });
+    //});
   }
 
   Future close() async {
